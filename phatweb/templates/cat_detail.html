@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>Feeding information for {{ cat.name }}</title>
+
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+<script src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.2.0.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.5/sandstone/bootstrap.min.css">
+
+<script>
+
+var app = angular.module('catdata', []);
+String.prototype.capitalize = function() {
+	return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
+app.controller('listCtrl', function($scope, $http) {
+	$http.get("/api/cat/{{cat.id}}/data/")
+	.success(function(response) {$scope.items = response;});
+
+	$scope.items = [];
+	$scope.fields = ['time', 'by', 'food'];
+
+	$scope.conv_food = function(str) {
+		ret = [
+			'undefined',
+			'Dry',
+			'Wet'
+		][parseInt(str)];
+		return ret;
+	}
+
+});
+
+</script>
+<body>
+<div ng-app="catdata" ng-controller="listCtrl">
+<table class="table table-bordered table-striped">
+	<thead>
+	<tr>
+		<th ng-repeat="x in fields">{% templatetag openvariable %} x.capitalize() {% templatetag closevariable %}</th>
+	</tr>
+	</thead>
+	<tr ng-repeat="x in items">
+		<td>{% templatetag openvariable %} x.time {% templatetag closevariable %}</td>
+		<td>{% templatetag openvariable %} x.by.username {% templatetag closevariable %}</td>
+		<td>{% templatetag openvariable %} conv_food(x.food) {% templatetag closevariable %}</td>
+	</tr>
+</table>
+
+</div>
+
+</body>
